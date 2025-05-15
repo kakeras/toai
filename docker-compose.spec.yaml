@@ -1,0 +1,35 @@
+version: '3'
+services:
+  swagger-editor:
+    image: swaggerapi/swagger-editor
+    ports:
+      - "10081:8080"
+      
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    environment:
+      - SWAGGER_JSON=/openapi/openapi.yml
+    volumes:
+      - ./spec/openapi.yml:/openapi/openapi.yml
+    ports:
+      - "10082:8080"
+  # doc:
+  #   image: redocly/redoc
+  #   volumes:
+  #     - ./spec/:/usr/share/nginx/html/api
+  #   environment:
+  #     SPEC_URL: api/openapi.yml
+  #   ports:
+  #     - "10083:80"
+  prism:
+    image: stoplight/prism:4
+    command: 'mock -h 0.0.0.0 /tmp/openapi.yaml'
+    volumes:
+      - ./spec/openapi.yml:/tmp/openapi.yaml:ro
+    ports:
+      - '10084:4010'
+
+  plantuml:
+    image: plantuml/plantuml-server:jetty
+    ports:
+      - "10085:8080"
