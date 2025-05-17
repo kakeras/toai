@@ -1,8 +1,15 @@
 # toai
 
+## Commands
+
+1. docker compose up -d
+2. npm ci
+3. npm run dev
+
 ## Setup Tasks
 
 ### Install
+
 - Express
 - Prisma
 - Prettier
@@ -10,7 +17,8 @@
 - ts-node
 - Eslint(optional)
 
-### Setup
+### Setup(Later..)
+
 - tsconfig
   - path alias
   - ...
