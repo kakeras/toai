@@ -1,10 +1,84 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+}
 
 const Jibun: React.FC = () => {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState('');
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+
+    // Add user message
+    const userMessage: Message = { role: 'user', content: input };
+    setMessages(prev => [...prev, userMessage]);
+    setInput('');
+
+    try {
+      // TODO: Replace with actual API call to your backend
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: input }),
+      });
+
+      const data = await response.json();
+      
+      // Add assistant message
+      const assistantMessage: Message = { 
+        role: 'assistant', 
+        content: data.response || 'Sorry, I could not process your request.' 
+      };
+      setMessages(prev => [...prev, assistantMessage]);
+    } catch (error) {
+      console.error('Error:', error);
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: 'Sorry, there was an error processing your request.' 
+      }]);
+    }
+  };
+
   return (
     <div className="jibun-container">
-      <h1>Jibun</h1>
-      <p>Welcome to the Jibun section!</p>
+      <div className="chat-header">
+        <button className="back-button" onClick={() => navigate('/')}>
+          ← Back
+        </button>
+        <h1>Jibun Chat</h1>
+      </div>
+      
+      <div className="chat-messages">
+        {messages.map((message, index) => (
+          <div 
+            key={index} 
+            className={`message ${message.role === 'user' ? 'user-message' : 'assistant-message'}`}
+          >
+            {message.content}
+          </div>
+        ))}
+      </div>
+
+      <form onSubmit={handleSubmit} className="chat-input-form">
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Type your message..."
+          className="chat-input"
+        />
+        <button type="submit" className="send-button">
+          Send
+        </button>
+      </form>
     </div>
   );
 };
