@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import mainImage from '../assets/image.png';
 
 const Main: React.FC = () => {
   const navigate = useNavigate();
@@ -7,6 +8,9 @@ const Main: React.FC = () => {
   return (
     <div className="main-container">
       <h1>Welcome</h1>
+      <div className="image-container">
+        <img src={mainImage} alt="Welcome" className="main-image" />
+      </div>
       <div className="button-container">
         <button 
           className="nav-button jibun-button"
