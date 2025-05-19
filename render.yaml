@@ -1,6 +1,6 @@
 services:
   # Frontend service
-  - type: static
+  - type: web
     name: toai-frontend
     buildCommand: cd frontend && npm install && npm run build
     staticPublishPath: frontend/dist
