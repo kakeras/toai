@@ -58,7 +58,7 @@ body {
 }
 
 .app-container {
-  width: 100%;
+  width: 60vw;
   min-height: 100vh;
   margin: 0 auto;
   padding: 1rem;
@@ -222,24 +222,84 @@ main {
   z-index: 2;
 }
 
+.message-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  max-width: 80%;
+  position: relative;
+}
+
+.user-wrapper {
+  flex-direction: row;
+  margin-left: auto;
+  padding-right: 50px;
+}
+
+.assistant-wrapper {
+  margin-right: auto;
+  padding-left: 50px;
+}
+
+.message-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  position: absolute;
+  top: 0;
+}
+
+.user-wrapper .message-avatar {
+  right: 0;
+}
+
+.assistant-wrapper .message-avatar {
+  left: 0;
+}
+
 .message {
   padding: 1rem;
   border-radius: 12px;
-  max-width: 80%;
+  position: relative;
   word-wrap: break-word;
 }
 
 .user-message {
   background-color: var(--accent-blue);
   color: white;
-  align-self: flex-end;
+  border-radius: 12px 12px 0 12px;
 }
 
 .assistant-message {
   background-color: white;
   color: var(--text-dark);
-  align-self: flex-start;
   border: 1px solid var(--cream-dark);
+  border-radius: 12px 12px 12px 0;
+}
+
+.user-message::after {
+  content: '';
+  position: absolute;
+  right: -8px;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-left: 8px solid var(--accent-blue);
+  border-bottom: 8px solid transparent;
+}
+
+.assistant-message::after {
+  content: '';
+  position: absolute;
+  left: -8px;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-right: 8px solid white;
+  border-bottom: 8px solid transparent;
 }
 
 .chat-input-form {
@@ -363,6 +423,15 @@ main {
   main {
     padding: 1.5rem;
   }
+
+  .message-wrapper {
+    max-width: 90%;
+  }
+  
+  .message-avatar {
+    width: 32px;
+    height: 32px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -370,12 +439,12 @@ main {
     height: 100px;
   }
   
-  .jibun-container .top-left {
+  .top-left {
     top: 10px;
     left: 10px;
   }
   
-  .jibun-container .bottom-right {
+  .bottom-right {
     bottom: 10px;
     right: 10px;
   }
@@ -386,5 +455,22 @@ main {
   
   .button-container {
     padding: 0 0.5rem;
+  }
+
+  .message-wrapper {
+    max-width: 95%;
+  }
+  
+  .message-avatar {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .user-wrapper {
+    padding-right: 35px;
+  }
+  
+  .assistant-wrapper {
+    padding-left: 35px;
   }
 }

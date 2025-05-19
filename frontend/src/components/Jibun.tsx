@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import colors1 from '../assets/colors-1.png';
 import colors2 from '../assets/colors-2.png';
+import kamiImage from '../assets/kami.png';
+import userImage from '../assets/user.png';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -57,16 +59,25 @@ const Jibun: React.FC = () => {
         <button className="back-button" onClick={() => navigate('/')}>
           ← Back
         </button>
-        <h1>Jibun Chat</h1>
       </div>
       
       <div className="chat-messages">
         {messages.map((message, index) => (
           <div 
             key={index} 
-            className={`message ${message.role === 'user' ? 'user-message' : 'assistant-message'}`}
+            className={`message-wrapper ${message.role === 'user' ? 'user-wrapper' : 'assistant-wrapper'}`}
           >
-            {message.content}
+            {message.role === 'assistant' && (
+              <img src={kamiImage} alt="Kami" className="message-avatar" />
+            )}
+            <div 
+              className={`message ${message.role === 'user' ? 'user-message' : 'assistant-message'}`}
+            >
+              {message.content}
+            </div>
+            {message.role === 'user' && (
+              <img src={userImage} alt="User" className="message-avatar" />
+            )}
           </div>
         ))}
       </div>
