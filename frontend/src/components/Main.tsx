@@ -11,7 +11,7 @@ const Main: React.FC = () => {
     <div className="main-container">
       <img src={colors1} alt="Colors 1" className="corner-image top-left" />
       <img src={colors2} alt="Colors 2" className="corner-image bottom-right" />
-      <h1>Welcome</h1>
+      <h1>TOAI</h1>
       <div className="image-container">
         <img src={mainImage} alt="Welcome" className="main-image" />
       </div>
