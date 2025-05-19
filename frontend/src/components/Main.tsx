@@ -22,7 +22,7 @@ const Main: React.FC = () => {
           className="nav-button portfolio-button"
           onClick={() => navigate('/portfolio')}
         >
-          Portfolio
+          マインドポートフォリオをつくる
         </button>
       </div>
     </div>
