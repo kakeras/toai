@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import colors1 from '../assets/colors-1.png';
+import colors2 from '../assets/colors-2.png';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -49,6 +51,8 @@ const Jibun: React.FC = () => {
 
   return (
     <div className="jibun-container">
+      <img src={colors1} alt="Colors 1" className="corner-image top-left" />
+      <img src={colors2} alt="Colors 2" className="corner-image bottom-right" />
       <div className="chat-header">
         <button className="back-button" onClick={() => navigate('/')}>
           ← Back
