@@ -1,12 +1,16 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import mainImage from '../assets/image.png';
+import colors1 from '../assets/colors-1.png';
+import colors2 from '../assets/colors-2.png';
 
 const Main: React.FC = () => {
   const navigate = useNavigate();
 
   return (
     <div className="main-container">
+      <img src={colors1} alt="Colors 1" className="corner-image top-left" />
+      <img src={colors2} alt="Colors 2" className="corner-image bottom-right" />
       <h1>Welcome</h1>
       <div className="image-container">
         <img src={mainImage} alt="Welcome" className="main-image" />

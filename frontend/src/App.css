@@ -97,7 +97,7 @@ main {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 2rem;
   box-sizing: border-box;
   background-color: white;
   border-radius: 12px;
@@ -112,7 +112,11 @@ main {
 /* Main Page Styles */
 .main-container {
   text-align: center;
-  padding: 2rem 1rem;
+  padding: 2rem;
+  position: relative;
+  min-height: 100vh;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .main-container h1 {
@@ -128,18 +132,22 @@ main {
   align-items: center;
   margin-top: 2rem;
   padding: 0 1rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 @media (min-width: 768px) {
   .button-container {
     flex-direction: row;
     justify-content: center;
+    gap: 2rem;
   }
 }
 
 .nav-button {
   width: 100%;
-  max-width: 300px;
+  max-width: 400px;
   padding: 1.2rem 2rem;
   font-size: clamp(1rem, 2vw, 1.2rem);
   border: none;
@@ -276,7 +284,7 @@ main {
   }
 
   main {
-    padding: 0.5rem;
+    padding: 1rem;
   }
 
   .chat-input-form {
@@ -290,7 +298,7 @@ main {
 
 .image-container {
   width: 100%;
-  max-width: 600px;
+  max-width: 800px;
   margin: 2rem auto;
   padding: 0 1rem;
   box-sizing: border-box;
@@ -312,5 +320,62 @@ main {
   .image-container {
     padding: 0 0.5rem;
     margin: 1rem auto;
+  }
+}
+
+.corner-image {
+  position: absolute;
+  width: auto;
+  height: 180px;
+  z-index: 1;
+}
+
+.top-left {
+  top: 20px;
+  left: 20px;
+}
+
+.bottom-right {
+  bottom: 20px;
+  right: 20px;
+}
+
+@media (min-width: 1200px) {
+  .corner-image {
+    height: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .corner-image {
+    height: 120px;
+  }
+  
+  main {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .corner-image {
+    height: 100px;
+  }
+  
+  .top-left {
+    top: 10px;
+    left: 10px;
+  }
+  
+  .bottom-right {
+    bottom: 10px;
+    right: 10px;
+  }
+  
+  main {
+    padding: 1rem;
+  }
+  
+  .button-container {
+    padding: 0 0.5rem;
   }
 }
