@@ -3,6 +3,7 @@ import Main from './components/Main';
 import Jibun from './components/Jibun';
 import Portfolio from './components/Portfolio';
 import JibunResult from './components/JibunResult';
+import PortfolioResult from './components/PortfolioResult';
 import './App.css';
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
             <Route path="/jibun" element={<Jibun />} />
             <Route path="/portfolio" element={<Portfolio />} />
             <Route path="/jibun-result" element={<JibunResult />} />
+            <Route path="/portfolio-result" element={<PortfolioResult />} />
           </Routes>
         </main>
       </div>
