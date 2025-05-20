@@ -12,6 +12,7 @@ const Portfolio: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [showAnalysisButton, setShowAnalysisButton] = useState(false);
   const navigate = useNavigate();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -25,6 +26,13 @@ const Portfolio: React.FC = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Check if we're at the end of the conversation
+  useEffect(() => {
+    if (currentQuestionIndex === (portfolioData as PortfolioData).conversation.length - 1) {
+      setShowAnalysisButton(true);
+    }
+  }, [currentQuestionIndex]);
 
   // Load messages from localStorage on component mount
   useEffect(() => {
@@ -114,6 +122,7 @@ const Portfolio: React.FC = () => {
   const clearChat = () => {
     setMessages([]);
     setCurrentQuestionIndex(0);
+    setShowAnalysisButton(false);
     localStorage.removeItem('portfolioChat');
     // Add initial question
     const initialMessage: Message = {
@@ -124,6 +133,10 @@ const Portfolio: React.FC = () => {
     };
     setMessages([initialMessage]);
     localStorage.setItem('portfolioChat', JSON.stringify([initialMessage]));
+  };
+
+  const handleAnalysis = () => {
+    alert(JSON.stringify(messages, null, 2));
   };
 
   if (!browserSupportsSpeechRecognition) {
@@ -139,9 +152,18 @@ const Portfolio: React.FC = () => {
           ← Back
         </button>
         <h1>Portfolio Chat</h1>
-        <button className="clear-button" onClick={clearChat}>
-          Clear Chat
-        </button>
+        <div className="header-buttons">
+          <button 
+            className={`analysis-button ${!showAnalysisButton ? 'disabled' : ''}`} 
+            onClick={handleAnalysis}
+            disabled={!showAnalysisButton}
+          >
+            Get Analysis
+          </button>
+          <button className="clear-button" onClick={clearChat}>
+            Clear Chat
+          </button>
+        </div>
       </div>
       
       <div className="chat-messages">
