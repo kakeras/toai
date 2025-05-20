@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import colors1 from '../assets/colors-1.png';
 import colors2 from '../assets/colors-2.png';
 import kamiImage from '../assets/kami.png';
 import userImage from '../assets/user.png';
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -15,13 +16,27 @@ const Jibun: React.FC = () => {
   const [input, setInput] = useState('');
   const navigate = useNavigate();
 
+  const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
+
+  useEffect(() => {
+    if (!listening && transcript.trim()) {
+      const userMessage: Message = { role: 'user', content: transcript };
+      setMessages((prev) => [...prev, userMessage]);
+      resetTranscript();
+    }
+  }, [listening]);
+
+  const startListening = () => {
+    SpeechRecognition.startListening({ continuous: false, language: 'ja-JP' }); // 日本語
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
 
     // Add user message
     const userMessage: Message = { role: 'user', content: input };
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setInput('');
 
     try {
@@ -35,21 +50,28 @@ const Jibun: React.FC = () => {
       });
 
       const data = await response.json();
-      
+
       // Add assistant message
-      const assistantMessage: Message = { 
-        role: 'assistant', 
-        content: data.response || 'Sorry, I could not process your request.' 
+      const assistantMessage: Message = {
+        role: 'assistant',
+        content: data.response || 'Sorry, I could not process your request.',
       };
-      setMessages(prev => [...prev, assistantMessage]);
+      setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
       console.error('Error:', error);
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: 'Sorry, there was an error processing your request.' 
-      }]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: 'assistant',
+          content: 'Sorry, there was an error processing your request.',
+        },
+      ]);
     }
   };
+
+  if (!browserSupportsSpeechRecognition) {
+    return <p>このブラウザでは音声認識がサポートされていません。</p>;
+  }
 
   return (
     <div className="jibun-container">
@@ -60,24 +82,18 @@ const Jibun: React.FC = () => {
           ← Back
         </button>
       </div>
-      
+
       <div className="chat-messages">
         {messages.map((message, index) => (
-          <div 
-            key={index} 
+          <div
+            key={index}
             className={`message-wrapper ${message.role === 'user' ? 'user-wrapper' : 'assistant-wrapper'}`}
           >
-            {message.role === 'assistant' && (
-              <img src={kamiImage} alt="Kami" className="message-avatar" />
-            )}
-            <div 
-              className={`message ${message.role === 'user' ? 'user-message' : 'assistant-message'}`}
-            >
+            {message.role === 'assistant' && <img src={kamiImage} alt="Kami" className="message-avatar" />}
+            <div className={`message ${message.role === 'user' ? 'user-message' : 'assistant-message'}`}>
               {message.content}
             </div>
-            {message.role === 'user' && (
-              <img src={userImage} alt="User" className="message-avatar" />
-            )}
+            {message.role === 'user' && <img src={userImage} alt="User" className="message-avatar" />}
           </div>
         ))}
       </div>
@@ -93,9 +109,12 @@ const Jibun: React.FC = () => {
         <button type="submit" className="send-button">
           Send
         </button>
+        <button onClick={startListening} disabled={listening}>
+          🎤 {listening ? '話してください...' : '録音開始'}
+        </button>
       </form>
     </div>
   );
 };
 
-export default Jibun; 
+export default Jibun;
