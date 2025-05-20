@@ -741,3 +741,143 @@ main {
     margin-bottom: 2rem;
   }
 }
+
+/* --- Portfolio Venn Diagram Styles --- */
+.portfolio-venn-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 500px;
+  position: relative;
+  background: #fff;
+  border: 2px solid #222;
+  border-radius: 16px;
+  margin: 2rem auto;
+  max-width: 900px;
+  box-sizing: border-box;
+  padding: 2rem 1rem 3rem 1rem;
+}
+
+.portfolio-venn {
+  position: relative;
+  width: 550px;
+  height: 300px;
+  margin: 0 auto;
+}
+
+.circle {
+  position: absolute;
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  border: 4px solid;
+  background: transparent;
+  font-weight: bold;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+}
+.circle.mission {
+  border-color: #f5b041;
+  color: #f5b041;
+  left: 185px;
+  top: 30px;
+}
+.circle.value {
+  border-color: #c39bd3;
+  color: #c39bd3;
+  left: 240px;
+  top: 135px;
+}
+.circle.vision {
+  border-color: #5dade2;
+  color: #5dade2;
+  left: 120px;
+  top: 135px;
+}
+
+.venn-text {
+  position: absolute;
+  background: #fff;
+  border: 1.5px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 0.8rem 1rem;
+  min-width: 120px;
+  max-width: 170px;
+  font-size: 0.85rem;
+  z-index: 3;
+  text-align: left;
+}
+.venn-label {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #222;
+  font-size: 0.95rem;
+}
+.venn-answers {
+  color: #333;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+.venn-text.mission-text {
+  left: 340px;
+  top: -80px;
+}
+.venn-text.value-text {
+  right: -80px;
+  top: 200px;
+}
+.venn-text.vision-text {
+  left: -100px;
+  top: 200px;
+}
+
+@media (max-width: 700px) {
+  .portfolio-venn {
+    width: 98vw;
+    max-width: 320px;
+    height: 180px;
+  }
+  .circle {
+    width: 80px;
+    height: 80px;
+    font-size: 0.5rem;
+  }
+  .circle.mission {
+    left: 55px;
+    top: 10px;
+  }
+  .circle.value {
+    left: 40px;
+    top: 60px;
+  }
+  .circle.vision {
+    left: 25px;
+    top: 60px;
+  }
+  .venn-text {
+    min-width: 50px;
+    max-width: 80px;
+    font-size: 0.5rem;
+    padding: 0.3rem 0.4rem;
+  }
+  .venn-text.mission-text {
+    left: 150px;
+    top: 0px;
+  }
+  .venn-text.value-text {
+    right: -20px;
+    top: 100px;
+  }
+  .venn-text.vision-text {
+    left: -20px;
+    top: 100px;
+  }
+}
+/* --- End Portfolio Venn Diagram Styles --- */
