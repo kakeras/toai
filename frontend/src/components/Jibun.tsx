@@ -136,7 +136,7 @@ const Jibun: React.FC = () => {
   };
 
   const handleAnalysis = () => {
-    alert(JSON.stringify(messages, null, 2));
+    navigate('/jibun-result');
   };
 
   if (!browserSupportsSpeechRecognition) {
