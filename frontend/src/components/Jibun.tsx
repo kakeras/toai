@@ -154,19 +154,19 @@ const Jibun: React.FC = () => {
       <img src={colors2} alt="Colors 2" className="corner-image bottom-right" />
       <div className="chat-header">
         <button className="back-button" onClick={() => navigate('/')}>
-          ← Back
+          ← 戻る
         </button>
-        <h1>Jibun Chat</h1>
+        <h1>今のじぶんを知る</h1>
         <div className="header-buttons">
           <button 
             className={`analysis-button ${!showAnalysisButton ? 'disabled' : ''}`} 
             onClick={handleAnalysis}
             disabled={!showAnalysisButton}
           >
-            Get Analysis
+            レポートを作成
           </button>
           <button className="clear-button" onClick={clearChat}>
-            Clear Chat
+            チャットをクリア
           </button>
         </div>
       </div>
