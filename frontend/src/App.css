@@ -621,18 +621,45 @@ main {
 
 .result-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 1rem;
-  background-color: #fff;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background-color: var(--cream);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  z-index: 1;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .result-header h1 {
   margin: 0;
   font-size: 1.5rem;
   color: #333;
+}
+
+.download-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--blue);
+  color: black;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.download-button:hover {
+  background-color: var(--dark-blue);
+  color: black;
+}
+
+.download-button svg {
+  width: 20px;
+  height: 20px;
+  stroke: black;
 }
 
 .result-content {

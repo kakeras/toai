@@ -27,29 +27,34 @@ const Jibun: React.FC = () => {
     scrollToBottom();
   }, [messages]);
 
-  // Check if we're at the end of the conversation
-  useEffect(() => {
-    if (currentQuestionIndex === (jibunData as JibunData).conversation.length - 1) {
-      setShowAnalysisButton(true);
-    }
-  }, [currentQuestionIndex]);
-
   // Load messages from localStorage on component mount
   useEffect(() => {
     const savedMessages = localStorage.getItem('jibunChat');
     if (savedMessages) {
-      setMessages(JSON.parse(savedMessages));
+      const parsedMessages = JSON.parse(savedMessages);
+      setMessages(parsedMessages);
+      
       // Find the last assistant message to determine current question
-      const lastAssistantIndex = [...JSON.parse(savedMessages)]
+      const lastAssistantIndex = [...parsedMessages]
         .reverse()
         .findIndex(msg => msg.role === 'assistant');
+      
       if (lastAssistantIndex !== -1) {
-        const lastMessage = JSON.parse(savedMessages)[JSON.parse(savedMessages).length - 1 - lastAssistantIndex];
+        const lastMessage = parsedMessages[parsedMessages.length - 1 - lastAssistantIndex];
         const questionIndex = (jibunData as JibunData).conversation.findIndex(
           item => item.question === lastMessage.content
         );
+        
         if (questionIndex !== -1) {
           setCurrentQuestionIndex(questionIndex + 1);
+          // Check if this was the last question
+          if (questionIndex === (jibunData as JibunData).conversation.length - 1) {
+            // Check if there's a user response to the last question
+            const hasUserResponse = parsedMessages.some(
+              (msg: Message, idx: number) => idx > parsedMessages.length - 1 - lastAssistantIndex && msg.role === 'user'
+            );
+            setShowAnalysisButton(hasUserResponse);
+          }
         }
       }
     } else {
