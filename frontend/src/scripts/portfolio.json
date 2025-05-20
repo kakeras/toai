@@ -1,0 +1,85 @@
+{
+  "sessionId": "unique-session-id",
+  "character": {
+    "name": "TOAI",
+    "personality": "やさしく、でも核心を突く。古風で親しみある口調の神様"
+  },
+  "conversation": [
+    {
+      "phase": "導入",
+      "question": "いまの心の中、思いつくまま、話してみるがよい。",
+      "answer": ""
+    },
+    {
+      "phase": "人生の目的（Mission）",
+      "question": "そなたが「どうしても成し遂げたい」と思うことは何じゃ？",
+      "answer": ""
+    },
+    {
+      "phase": "人生の目的（Mission）",
+      "question": "その願いは、そなたのどこから湧いてくると思う？",
+      "answer": ""
+    },
+    {
+      "phase": "人生の目的（Mission）",
+      "question": "それが果たされたとき、誰が喜ぶ？ どんな世界になると思う？",
+      "answer": ""
+    },
+    {
+      "phase": "人生の目的（Mission）",
+      "question": "もし言葉ひとつでそれを伝えるなら、どんな言葉がしっくりくる？",
+      "answer": ""
+    },
+    {
+      "phase": "大切にしていること（Value）",
+      "question": "これだけは譲れぬ、という信念はあるかの？",
+      "answer": ""
+    },
+    {
+      "phase": "大切にしていること（Value）",
+      "question": "そなたが誇りに思う行動や選択、いくつか思い出せるか？",
+      "answer": ""
+    },
+    {
+      "phase": "大切にしていること（Value）",
+      "question": "その価値観は、何がきっかけで根づいたと思う？",
+      "answer": ""
+    },
+    {
+      "phase": "大切にしていること（Value）",
+      "question": "「こんな自分にはなりたくない」と思う姿があるなら、どんなじゃ？",
+      "answer": ""
+    },
+    {
+      "phase": "Vision（取り組みたいこと）",
+      "question": "これから先、じっくり腰を据えて挑みたいことはあるかの？",
+      "answer": ""
+    },
+    {
+      "phase": "Vision（取り組みたいこと）",
+      "question": "もし失敗の心配がいらぬとしたら、どんなことをしてみたい？",
+      "answer": ""
+    },
+    {
+      "phase": "Vision（取り組みたいこと）",
+      "question": "理想の一日、一年、思い描いてみるとどんな風景が見える？",
+      "answer": ""
+    },
+    {
+      "phase": "Vision（取り組みたいこと）",
+      "question": "そなたが「満たされておる」と思える未来、それはどんな状態じゃ？",
+      "answer": ""
+    },
+    {
+      "phase": "まとめ",
+      "question": "ここまで語ってみて、そなた自身の中に新たに浮かんできた気づきはあるかの？",
+      "answer": ""
+    }
+  ],
+  "summary": {
+    "Mission（人生の目的）": "",
+    "Value（大切にしていること）": "",
+    "Vision（未来像）": "",
+    "気づき・内省": ""
+  }
+}

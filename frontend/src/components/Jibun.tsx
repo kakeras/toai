@@ -5,29 +5,63 @@ import colors2 from '../assets/colors-2.png';
 import kamiImage from '../assets/kami.png';
 import userImage from '../assets/user.png';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
-
-interface Message {
-  role: 'user' | 'assistant';
-  content: string;
-}
+import jibunData from '../scripts/jibun.json';
+import type { Message, JibunData } from '../types/jibun';
 
 const Jibun: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const navigate = useNavigate();
 
   const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
 
+  // Load messages from localStorage on component mount
+  useEffect(() => {
+    const savedMessages = localStorage.getItem('jibunChat');
+    if (savedMessages) {
+      setMessages(JSON.parse(savedMessages));
+      // Find the last assistant message to determine current question
+      const lastAssistantIndex = [...JSON.parse(savedMessages)]
+        .reverse()
+        .findIndex(msg => msg.role === 'assistant');
+      if (lastAssistantIndex !== -1) {
+        const lastMessage = JSON.parse(savedMessages)[JSON.parse(savedMessages).length - 1 - lastAssistantIndex];
+        const questionIndex = (jibunData as JibunData).conversation.findIndex(
+          item => item.question === lastMessage.content
+        );
+        if (questionIndex !== -1) {
+          setCurrentQuestionIndex(questionIndex + 1);
+        }
+      }
+    } else {
+      // Start with the first question if no saved messages
+      const initialMessage: Message = {
+        role: 'assistant',
+        content: (jibunData as JibunData).conversation[0].question,
+        timestamp: Date.now(),
+        phase: (jibunData as JibunData).conversation[0].phase
+      };
+      setMessages([initialMessage]);
+      localStorage.setItem('jibunChat', JSON.stringify([initialMessage]));
+    }
+  }, []);
+
   useEffect(() => {
     if (!listening && transcript.trim()) {
-      const userMessage: Message = { role: 'user', content: transcript };
+      const userMessage: Message = { 
+        role: 'user', 
+        content: transcript, 
+        timestamp: Date.now(),
+        phase: (jibunData as JibunData).conversation[currentQuestionIndex].phase
+      };
       setMessages((prev) => [...prev, userMessage]);
       resetTranscript();
     }
   }, [listening]);
 
   const startListening = () => {
-    SpeechRecognition.startListening({ continuous: false, language: 'ja-JP' }); // 日本語
+    SpeechRecognition.startListening({ continuous: false, language: 'ja-JP' });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -35,38 +69,51 @@ const Jibun: React.FC = () => {
     if (!input.trim()) return;
 
     // Add user message
-    const userMessage: Message = { role: 'user', content: input };
-    setMessages((prev) => [...prev, userMessage]);
+    const userMessage: Message = {
+      role: 'user',
+      content: input,
+      timestamp: Date.now(),
+      phase: (jibunData as JibunData).conversation[currentQuestionIndex].phase
+    };
+    
+    const updatedMessages = [...messages, userMessage];
+    setMessages(updatedMessages);
     setInput('');
 
-    try {
-      // TODO: Replace with actual API call to your backend
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message: input }),
-      });
+    // Save to localStorage
+    localStorage.setItem('jibunChat', JSON.stringify(updatedMessages));
 
-      const data = await response.json();
-
-      // Add assistant message
+    // Add next AI question if available
+    if (currentQuestionIndex < (jibunData as JibunData).conversation.length - 1) {
+      const nextQuestionIndex = currentQuestionIndex + 1;
+      const nextQuestion = (jibunData as JibunData).conversation[nextQuestionIndex];
       const assistantMessage: Message = {
         role: 'assistant',
-        content: data.response || 'Sorry, I could not process your request.',
+        content: nextQuestion.question,
+        timestamp: Date.now(),
+        phase: nextQuestion.phase
       };
-      setMessages((prev) => [...prev, assistantMessage]);
-    } catch (error) {
-      console.error('Error:', error);
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: 'assistant',
-          content: 'Sorry, there was an error processing your request.',
-        },
-      ]);
+      
+      const messagesWithQuestion = [...updatedMessages, assistantMessage];
+      setMessages(messagesWithQuestion);
+      setCurrentQuestionIndex(nextQuestionIndex);
+      localStorage.setItem('jibunChat', JSON.stringify(messagesWithQuestion));
     }
+  };
+
+  const clearChat = () => {
+    setMessages([]);
+    setCurrentQuestionIndex(0);
+    localStorage.removeItem('jibunChat');
+    // Add initial question
+    const initialMessage: Message = {
+      role: 'assistant',
+      content: (jibunData as JibunData).conversation[0].question,
+      timestamp: Date.now(),
+      phase: (jibunData as JibunData).conversation[0].phase
+    };
+    setMessages([initialMessage]);
+    localStorage.setItem('jibunChat', JSON.stringify([initialMessage]));
   };
 
   if (!browserSupportsSpeechRecognition) {
@@ -81,19 +128,32 @@ const Jibun: React.FC = () => {
         <button className="back-button" onClick={() => navigate('/')}>
           ← Back
         </button>
+        <h1>Jibun Chat</h1>
+        <button className="clear-button" onClick={clearChat}>
+          Clear Chat
+        </button>
       </div>
-
+      
       <div className="chat-messages">
         {messages.map((message, index) => (
-          <div
-            key={index}
+          <div 
+            key={index} 
             className={`message-wrapper ${message.role === 'user' ? 'user-wrapper' : 'assistant-wrapper'}`}
           >
-            {message.role === 'assistant' && <img src={kamiImage} alt="Kami" className="message-avatar" />}
-            <div className={`message ${message.role === 'user' ? 'user-message' : 'assistant-message'}`}>
+            {message.role === 'assistant' && (
+              <img src={kamiImage} alt="Kami" className="message-avatar" />
+            )}
+            <div 
+              className={`message ${message.role === 'user' ? 'user-message' : 'assistant-message'}`}
+            >
+              {message.phase && message.role === 'assistant' && (
+                <div className="phase-title">{message.phase}</div>
+              )}
               {message.content}
             </div>
-            {message.role === 'user' && <img src={userImage} alt="User" className="message-avatar" />}
+            {message.role === 'user' && (
+              <img src={userImage} alt="User" className="message-avatar" />
+            )}
           </div>
         ))}
       </div>
