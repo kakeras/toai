@@ -1,9 +1,0 @@
-services:
-  # Frontend service
-  - type: web
-    name: toai-frontend
-    buildCommand: cd frontend && npm install && npm run build
-    staticPublishPath: frontend/dist
-    envVars:
-      - key: NODE_VERSION
-        value: 18.0.0
