@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Main from './components/Main';
 import Jibun from './components/Jibun';
 import Portfolio from './components/Portfolio';
+import JibunResult from './components/JibunResult';
 import './App.css';
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
             <Route path="/" element={<Main />} />
             <Route path="/jibun" element={<Jibun />} />
             <Route path="/portfolio" element={<Portfolio />} />
+            <Route path="/jibun-result" element={<JibunResult />} />
           </Routes>
         </main>
       </div>
