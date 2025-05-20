@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import colors1 from '../assets/colors-1.png';
 import colors2 from '../assets/colors-2.png';
@@ -13,8 +13,18 @@ const Jibun: React.FC = () => {
   const [input, setInput] = useState('');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const navigate = useNavigate();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   // Load messages from localStorage on component mount
   useEffect(() => {
@@ -156,6 +166,7 @@ const Jibun: React.FC = () => {
             )}
           </div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
 
       <form onSubmit={handleSubmit} className="chat-input-form">
