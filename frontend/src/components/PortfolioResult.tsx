@@ -5,11 +5,11 @@ import colors2 from '../assets/colors-2.png';
 import type { Message } from '../types/portfolio';
 import html2pdf from 'html2pdf.js';
 
-const PHASE_LABELS = {
-  mission: 'Mission（人生の目的）',
-  value: 'Value（大切にしていること）',
-  vision: 'Vision（未来像）',
-};
+// const PHASE_LABELS = {
+//   mission: 'Mission（人生の目的）',
+//   value: 'Value（大切にしていること）',
+//   vision: 'Vision（未来像）',
+// };
 
 const PortfolioResult: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -58,7 +58,7 @@ const PortfolioResult: React.FC = () => {
       filename: 'ポートフォリオ-分析結果.pdf',
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2 },
-      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
     };
     html2pdf().set(opt).from(element).save();
   };
@@ -73,10 +73,20 @@ const PortfolioResult: React.FC = () => {
         </button>
         <h1>ポートフォリオ - 分析結果</h1>
         <button className="download-button" onClick={handleDownload}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-            <polyline points="7 10 12 15 17 10"/>
-            <line x1="12" y1="15" x2="12" y2="3"/>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
           </svg>
           PDFをダウンロード
         </button>
@@ -91,7 +101,11 @@ const PortfolioResult: React.FC = () => {
           <div className="venn-text mission-text">
             <div className="venn-label">実現したいこと</div>
             <div className="venn-answers">
-              {answers.mission.length > 0 ? answers.mission.map((a, i) => <div key={i}>{a}</div>) : <div>（未入力）</div>}
+              {answers.mission.length > 0 ? (
+                answers.mission.map((a, i) => <div key={i}>{a}</div>)
+              ) : (
+                <div>（未入力）</div>
+              )}
             </div>
           </div>
           <div className="venn-text value-text">
@@ -108,11 +122,13 @@ const PortfolioResult: React.FC = () => {
           </div>
         </div>
       </div>
-      <div style={{textAlign: 'center', margin: '2rem 0'}}>
-        <button className="back-button" onClick={() => navigate('/')}>TOPページに戻る</button>
+      <div style={{ textAlign: 'center', margin: '2rem 0' }}>
+        <button className="back-button" onClick={() => navigate('/')}>
+          TOPページに戻る
+        </button>
       </div>
     </div>
   );
 };
 
-export default PortfolioResult; 
+export default PortfolioResult;
