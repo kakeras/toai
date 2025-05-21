@@ -19,7 +19,7 @@ const Jibun: React.FC = () => {
   const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   // Scroll to bottom when messages change
@@ -33,25 +33,24 @@ const Jibun: React.FC = () => {
     if (savedMessages) {
       const parsedMessages = JSON.parse(savedMessages);
       setMessages(parsedMessages);
-      
+
       // Find the last assistant message to determine current question
-      const lastAssistantIndex = [...parsedMessages]
-        .reverse()
-        .findIndex(msg => msg.role === 'assistant');
-      
+      const lastAssistantIndex = [...parsedMessages].reverse().findIndex((msg) => msg.role === 'assistant');
+
       if (lastAssistantIndex !== -1) {
         const lastMessage = parsedMessages[parsedMessages.length - 1 - lastAssistantIndex];
         const questionIndex = (jibunData as JibunData).conversation.findIndex(
-          item => item.question === lastMessage.content
+          (item) => item.question === lastMessage.content,
         );
-        
+
         if (questionIndex !== -1) {
           setCurrentQuestionIndex(questionIndex + 1);
           // Check if this was the last question
           if (questionIndex === (jibunData as JibunData).conversation.length - 1) {
             // Check if there's a user response to the last question
             const hasUserResponse = parsedMessages.some(
-              (msg: Message, idx: number) => idx > parsedMessages.length - 1 - lastAssistantIndex && msg.role === 'user'
+              (msg: Message, idx: number) =>
+                idx > parsedMessages.length - 1 - lastAssistantIndex && msg.role === 'user',
             );
             setShowAnalysisButton(hasUserResponse);
           }
@@ -63,7 +62,7 @@ const Jibun: React.FC = () => {
         role: 'assistant',
         content: (jibunData as JibunData).conversation[0].question,
         timestamp: Date.now(),
-        phase: (jibunData as JibunData).conversation[0].phase
+        phase: (jibunData as JibunData).conversation[0].phase,
       };
       setMessages([initialMessage]);
       localStorage.setItem('jibunChat', JSON.stringify([initialMessage]));
@@ -72,19 +71,19 @@ const Jibun: React.FC = () => {
 
   useEffect(() => {
     if (!listening && transcript.trim()) {
-      const userMessage: Message = { 
-        role: 'user', 
-        content: transcript, 
+      const userMessage: Message = {
+        role: 'user',
+        content: transcript,
         timestamp: Date.now(),
-        phase: (jibunData as JibunData).conversation[currentQuestionIndex].phase
+        phase: (jibunData as JibunData).conversation[currentQuestionIndex].phase,
       };
       setMessages((prev) => [...prev, userMessage]);
       resetTranscript();
     }
   }, [listening]);
 
-  const startListening = () => {
-    SpeechRecognition.startListening({ continuous: false, language: 'ja-JP' });
+  const startListening = async () => {
+    await SpeechRecognition.startListening({ continuous: false, language: 'ja-JP' });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -96,9 +95,9 @@ const Jibun: React.FC = () => {
       role: 'user',
       content: input,
       timestamp: Date.now(),
-      phase: (jibunData as JibunData).conversation[currentQuestionIndex].phase
+      phase: (jibunData as JibunData).conversation[currentQuestionIndex].phase,
     };
-    
+
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
     setInput('');
@@ -114,9 +113,9 @@ const Jibun: React.FC = () => {
         role: 'assistant',
         content: nextQuestion.question,
         timestamp: Date.now(),
-        phase: nextQuestion.phase
+        phase: nextQuestion.phase,
       };
-      
+
       const messagesWithQuestion = [...updatedMessages, assistantMessage];
       setMessages(messagesWithQuestion);
       setCurrentQuestionIndex(nextQuestionIndex);
@@ -134,7 +133,7 @@ const Jibun: React.FC = () => {
       role: 'assistant',
       content: (jibunData as JibunData).conversation[0].question,
       timestamp: Date.now(),
-      phase: (jibunData as JibunData).conversation[0].phase
+      phase: (jibunData as JibunData).conversation[0].phase,
     };
     setMessages([initialMessage]);
     localStorage.setItem('jibunChat', JSON.stringify([initialMessage]));
@@ -158,8 +157,8 @@ const Jibun: React.FC = () => {
         </button>
         <h1>今のじぶんを知る</h1>
         <div className="header-buttons">
-          <button 
-            className={`analysis-button ${!showAnalysisButton ? 'disabled' : ''}`} 
+          <button
+            className={`analysis-button ${!showAnalysisButton ? 'disabled' : ''}`}
             onClick={handleAnalysis}
             disabled={!showAnalysisButton}
           >
@@ -170,27 +169,19 @@ const Jibun: React.FC = () => {
           </button>
         </div>
       </div>
-      
+
       <div className="chat-messages">
         {messages.map((message, index) => (
-          <div 
-            key={index} 
+          <div
+            key={index}
             className={`message-wrapper ${message.role === 'user' ? 'user-wrapper' : 'assistant-wrapper'}`}
           >
-            {message.role === 'assistant' && (
-              <img src={kamiImage} alt="Kami" className="message-avatar" />
-            )}
-            <div 
-              className={`message ${message.role === 'user' ? 'user-message' : 'assistant-message'}`}
-            >
-              {message.phase && message.role === 'assistant' && (
-                <div className="phase-title">{message.phase}</div>
-              )}
+            {message.role === 'assistant' && <img src={kamiImage} alt="Kami" className="message-avatar" />}
+            <div className={`message ${message.role === 'user' ? 'user-message' : 'assistant-message'}`}>
+              {message.phase && message.role === 'assistant' && <div className="phase-title">{message.phase}</div>}
               {message.content}
             </div>
-            {message.role === 'user' && (
-              <img src={userImage} alt="User" className="message-avatar" />
-            )}
+            {message.role === 'user' && <img src={userImage} alt="User" className="message-avatar" />}
           </div>
         ))}
         <div ref={messagesEndRef} />
