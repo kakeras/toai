@@ -1,6 +1,7 @@
-import { Handler } from '@netlify/functions';
+import { Handler, HandlerResponse } from '@netlify/functions';
 
-const handler: Handler = async (event, context) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const handler: Handler = async (event, context): Promise<HandlerResponse> => {
   // Handle CORS preflight requests
   if (event.httpMethod === 'OPTIONS') {
     return {
@@ -9,6 +10,7 @@ const handler: Handler = async (event, context) => {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Headers': 'Content-Type',
         'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Content-Type': 'application/json'
       },
       body: '',
     };
