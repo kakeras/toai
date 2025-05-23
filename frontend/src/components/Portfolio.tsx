@@ -22,6 +22,42 @@ const Portfolio: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // Helper function to handle message submission
+  const handleMessageSubmission = (content: string) => {
+    if (!content.trim()) return;
+
+    // Add user message
+    const userMessage: Message = {
+      role: 'user',
+      content,
+      timestamp: Date.now(),
+      phase: (portfolioData as PortfolioData).conversation[currentQuestionIndex].phase
+    };
+    
+    const updatedMessages = [...messages, userMessage];
+    setMessages(updatedMessages);
+
+    // Save to localStorage
+    localStorage.setItem('portfolioChat', JSON.stringify(updatedMessages));
+
+    // Add next AI question if available
+    if (currentQuestionIndex < (portfolioData as PortfolioData).conversation.length - 1) {
+      const nextQuestionIndex = currentQuestionIndex + 1;
+      const nextQuestion = (portfolioData as PortfolioData).conversation[nextQuestionIndex];
+      const assistantMessage: Message = {
+        role: 'assistant',
+        content: nextQuestion.question,
+        timestamp: Date.now(),
+        phase: nextQuestion.phase
+      };
+      
+      const messagesWithQuestion = [...updatedMessages, assistantMessage];
+      setMessages(messagesWithQuestion);
+      setCurrentQuestionIndex(nextQuestionIndex);
+      localStorage.setItem('portfolioChat', JSON.stringify(messagesWithQuestion));
+    }
+  };
+
   // Scroll to bottom when messages change
   useEffect(() => {
     scrollToBottom();
@@ -70,13 +106,7 @@ const Portfolio: React.FC = () => {
 
   useEffect(() => {
     if (!listening && transcript.trim()) {
-      const userMessage: Message = { 
-        role: 'user', 
-        content: transcript, 
-        timestamp: Date.now(),
-        phase: (portfolioData as PortfolioData).conversation[currentQuestionIndex].phase
-      };
-      setMessages((prev) => [...prev, userMessage]);
+      handleMessageSubmission(transcript);
       resetTranscript();
     }
   }, [listening]);
@@ -87,39 +117,8 @@ const Portfolio: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim()) return;
-
-    // Add user message
-    const userMessage: Message = {
-      role: 'user',
-      content: input,
-      timestamp: Date.now(),
-      phase: (portfolioData as PortfolioData).conversation[currentQuestionIndex].phase
-    };
-    
-    const updatedMessages = [...messages, userMessage];
-    setMessages(updatedMessages);
+    handleMessageSubmission(input);
     setInput('');
-
-    // Save to localStorage
-    localStorage.setItem('portfolioChat', JSON.stringify(updatedMessages));
-
-    // Add next AI question if available
-    if (currentQuestionIndex < (portfolioData as PortfolioData).conversation.length - 1) {
-      const nextQuestionIndex = currentQuestionIndex + 1;
-      const nextQuestion = (portfolioData as PortfolioData).conversation[nextQuestionIndex];
-      const assistantMessage: Message = {
-        role: 'assistant',
-        content: nextQuestion.question,
-        timestamp: Date.now(),
-        phase: nextQuestion.phase
-      };
-      
-      const messagesWithQuestion = [...updatedMessages, assistantMessage];
-      setMessages(messagesWithQuestion);
-      setCurrentQuestionIndex(nextQuestionIndex);
-      localStorage.setItem('portfolioChat', JSON.stringify(messagesWithQuestion));
-    }
   };
 
   const clearChat = () => {
