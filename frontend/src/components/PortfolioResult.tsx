@@ -4,6 +4,7 @@ import colors1 from '../assets/colors-1.png';
 import colors2 from '../assets/colors-2.png';
 import type { Message } from '../types/portfolio';
 import html2pdf from 'html2pdf.js';
+import { analyzeConversation } from '../utils/analysis';
 
 // const PHASE_LABELS = {
 //   mission: 'Mission（人生の目的）',
@@ -13,6 +14,8 @@ import html2pdf from 'html2pdf.js';
 
 const PortfolioResult: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [analysis, setAnalysis] = useState<string>('');
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const navigate = useNavigate();
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -30,6 +33,20 @@ const PortfolioResult: React.FC = () => {
     }
     setMessages(JSON.parse(savedMessages));
   }, [navigate]);
+
+  const handleAnalysis = async () => {
+    setIsAnalyzing(true);
+    try {
+      const response = await analyzeConversation(messages);
+      if (response.message) {
+        setAnalysis(response.message);
+      }
+    } catch (error) {
+      console.error('Analysis error:', error);
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
 
   // Group user answers by phase
   const getAnswersByPhase = () => {
@@ -72,52 +89,78 @@ const PortfolioResult: React.FC = () => {
           ← チャットに戻る
         </button>
         <h1>ポートフォリオ - 分析結果</h1>
-        <button className="download-button" onClick={handleDownload}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+        <div className="header-buttons">
+          <button 
+            className="analysis-button" 
+            onClick={handleAnalysis}
+            disabled={isAnalyzing}
           >
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="7 10 12 15 17 10" />
-            <line x1="12" y1="15" x2="12" y2="3" />
-          </svg>
-          PDFをダウンロード
-        </button>
+            {isAnalyzing ? '分析中...' : 'AI分析を開始'}
+          </button>
+          <button className="download-button" onClick={handleDownload}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            PDFをダウンロード
+          </button>
+        </div>
       </div>
-      <div className="portfolio-venn-wrapper" ref={contentRef}>
-        <div className="portfolio-venn">
-          {/* Venn Diagram Circles */}
-          <div className="circle mission">Mission</div>
-          <div className="circle value">Value</div>
-          <div className="circle vision">Vision</div>
-          {/* Text Boxes */}
-          <div className="venn-text mission-text">
-            <div className="venn-label">実現したいこと</div>
-            <div className="venn-answers">
-              {answers.mission.length > 0 ? (
-                answers.mission.map((a, i) => <div key={i}>{a}</div>)
-              ) : (
-                <div>（未入力）</div>
-              )}
-            </div>
+      <div className="result-content" ref={contentRef}>
+        {analysis && (
+          <div className="analysis-section">
+            <h2>AIによる分析とアドバイス</h2>
+            <div className="analysis-content">{analysis}</div>
           </div>
-          <div className="venn-text value-text">
-            <div className="venn-label">大切にしていること</div>
-            <div className="venn-answers">
-              {answers.value.length > 0 ? answers.value.map((a, i) => <div key={i}>{a}</div>) : <div>（未入力）</div>}
+        )}
+
+        <div className="portfolio-venn-wrapper">
+          <div className="portfolio-venn">
+            {/* Venn Diagram Circles */}
+            <div className="circle mission">Mission</div>
+            <div className="circle value">Value</div>
+            <div className="circle vision">Vision</div>
+            {/* Text Boxes */}
+            <div className="venn-text mission-text">
+              <div className="venn-label">実現したいこと</div>
+              <div className="venn-answers">
+                {answers.mission.length > 0 ? (
+                  answers.mission.map((a, i) => <div key={i}>{a}</div>)
+                ) : (
+                  <div>（未入力）</div>
+                )}
+              </div>
             </div>
-          </div>
-          <div className="venn-text vision-text">
-            <div className="venn-label">時間をかけて取り組みたいこと</div>
-            <div className="venn-answers">
-              {answers.vision.length > 0 ? answers.vision.map((a, i) => <div key={i}>{a}</div>) : <div>（未入力）</div>}
+            <div className="venn-text value-text">
+              <div className="venn-label">大切にしていること</div>
+              <div className="venn-answers">
+                {answers.value.length > 0 ? (
+                  answers.value.map((a, i) => <div key={i}>{a}</div>)
+                ) : (
+                  <div>（未入力）</div>
+                )}
+              </div>
+            </div>
+            <div className="venn-text vision-text">
+              <div className="venn-label">時間をかけて取り組みたいこと</div>
+              <div className="venn-answers">
+                {answers.vision.length > 0 ? (
+                  answers.vision.map((a, i) => <div key={i}>{a}</div>)
+                ) : (
+                  <div>（未入力）</div>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -127,6 +170,53 @@ const PortfolioResult: React.FC = () => {
           TOPページに戻る
         </button>
       </div>
+      <style>{`
+        .header-buttons {
+          display: flex;
+          gap: 1rem;
+          align-items: center;
+        }
+
+        .analysis-button {
+          padding: 0.5rem 1rem;
+          background-color: #4CAF50;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 1rem;
+          transition: background-color 0.3s;
+        }
+
+        .analysis-button:hover {
+          background-color: #45a049;
+        }
+
+        .analysis-button:disabled {
+          background-color: #cccccc;
+          cursor: not-allowed;
+        }
+
+        .analysis-section {
+          background: #f8f9fa;
+          padding: 2rem;
+          border-radius: 8px;
+          margin-bottom: 2rem;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .analysis-section h2 {
+          color: #2c3e50;
+          margin-bottom: 1rem;
+          font-size: 1.5rem;
+        }
+
+        .analysis-content {
+          line-height: 1.6;
+          color: #34495e;
+          white-space: pre-wrap;
+        }
+      `}</style>
     </div>
   );
 };

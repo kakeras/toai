@@ -57,6 +57,9 @@ const Jibun: React.FC = () => {
       setMessages(messagesWithQuestion);
       setCurrentQuestionIndex(nextQuestionIndex);
       localStorage.setItem('jibunChat', JSON.stringify(messagesWithQuestion));
+    } else {
+      // If this was the last question, enable the analysis button
+      setShowAnalysisButton(true);
     }
   };
 

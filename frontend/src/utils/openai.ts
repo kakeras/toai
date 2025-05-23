@@ -1,4 +1,5 @@
 import OpenAI from 'openai';
+import { toast } from 'react-toastify';
 
 export interface OpenAIResponse {
   message: string;
@@ -16,7 +17,20 @@ export const callOpenAI = async (messages: OpenAI.Chat.ChatCompletionMessage[]):
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorData = await response.json();
+      const errorMessage = errorData.error || 'An error occurred';
+      
+      // Show error toast
+      toast.error(errorMessage, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true
+      });
+
+      throw new Error(errorMessage);
     }
 
     const data = await response.json();

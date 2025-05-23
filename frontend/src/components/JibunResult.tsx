@@ -4,9 +4,12 @@ import colors1 from '../assets/colors-1.png';
 import colors2 from '../assets/colors-2.png';
 import type { Message } from '../types/jibun';
 import html2pdf from 'html2pdf.js';
+import { analyzeConversation } from '../utils/analysis';
 
 const JibunResult: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [analysis, setAnalysis] = useState<string>('');
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const navigate = useNavigate();
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -20,17 +23,24 @@ const JibunResult: React.FC = () => {
     const savedMessages = localStorage.getItem('jibunChat');
     if (!savedMessages) {
       navigate('/jibun');
-    }
-  }, [navigate]);
-
-  useEffect(() => {
-    const savedMessages = localStorage.getItem('jibunChat');
-    if (!savedMessages) {
-      navigate('/jibun');
       return;
     }
     setMessages(JSON.parse(savedMessages));
   }, [navigate]);
+
+  const handleAnalysis = async () => {
+    setIsAnalyzing(true);
+    try {
+      const response = await analyzeConversation(messages);
+      if (response.message) {
+        setAnalysis(response.message);
+      }
+    } catch (error) {
+      console.error('Analysis error:', error);
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
 
   const groupMessagesByPhase = () => {
     const grouped: { [key: string]: Message[] } = {};
@@ -79,17 +89,33 @@ const JibunResult: React.FC = () => {
           ← チャットに戻る
         </button>
         <h1>自分と向き合う - 分析結果</h1>
-        <button className="download-button" onClick={handleDownload}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-            <polyline points="7 10 12 15 17 10"/>
-            <line x1="12" y1="15" x2="12" y2="3"/>
-          </svg>
-          PDFをダウンロード
-        </button>
+        <div className="header-buttons">
+          <button 
+            className="analysis-button" 
+            onClick={handleAnalysis}
+            disabled={isAnalyzing}
+          >
+            {isAnalyzing ? '分析中...' : 'AI分析を開始'}
+          </button>
+          <button className="download-button" onClick={handleDownload}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            PDFをダウンロード
+          </button>
+        </div>
       </div>
       
       <div className="result-content" ref={contentRef}>
+        {analysis && (
+          <div className="analysis-section">
+            <h2>AIによる分析とアドバイス</h2>
+            <div className="analysis-content">{analysis}</div>
+          </div>
+        )}
+        
         {Object.entries(groupMessagesByPhase()).map(([phase, phaseMessages]) => (
           <div key={phase} className="phase-section">
             <h2 className="phase-title">{phase}</h2>
@@ -111,6 +137,54 @@ const JibunResult: React.FC = () => {
           </div>
         ))}
       </div>
+
+      <style>{`
+        .header-buttons {
+          display: flex;
+          gap: 1rem;
+          align-items: center;
+        }
+
+        .analysis-button {
+          padding: 0.5rem 1rem;
+          background-color: #4CAF50;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 1rem;
+          transition: background-color 0.3s;
+        }
+
+        .analysis-button:hover {
+          background-color: #45a049;
+        }
+
+        .analysis-button:disabled {
+          background-color: #cccccc;
+          cursor: not-allowed;
+        }
+
+        .analysis-section {
+          background: #f8f9fa;
+          padding: 2rem;
+          border-radius: 8px;
+          margin-bottom: 2rem;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .analysis-section h2 {
+          color: #2c3e50;
+          margin-bottom: 1rem;
+          font-size: 1.5rem;
+        }
+
+        .analysis-content {
+          line-height: 1.6;
+          color: #34495e;
+          white-space: pre-wrap;
+        }
+      `}</style>
     </div>
   );
 };
