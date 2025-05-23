@@ -7,6 +7,7 @@ import userImage from '../assets/user.png';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import jibunData from '../scripts/jibun.json';
 import type { Message, JibunData } from '../types/jibun';
+import '../styles/VoiceButton.css';
 
 const Jibun: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -15,6 +16,8 @@ const Jibun: React.FC = () => {
   const [showAnalysisButton, setShowAnalysisButton] = useState(false);
   const navigate = useNavigate();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [voiceInput, setVoiceInput] = useState('');
 
   const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
 
@@ -105,16 +108,41 @@ const Jibun: React.FC = () => {
     }
   }, []);
 
-  useEffect(() => {
-    if (!listening && transcript.trim()) {
-      handleMessageSubmission(transcript);
+  const startListening = async () => {
+    setIsRecording(true);
+    setVoiceInput('');
+    resetTranscript();
+    await SpeechRecognition.startListening({ continuous: true, language: 'ja-JP' });
+  };
+
+  const stopListening = () => {
+    setIsRecording(false);
+    SpeechRecognition.stopListening();
+  };
+
+  const handleVoiceSubmit = () => {
+    const finalInput = transcript.trim();
+    if (finalInput) {
+      handleMessageSubmission(finalInput);
+      setVoiceInput('');
       resetTranscript();
     }
-  }, [listening]);
-
-  const startListening = async () => {
-    await SpeechRecognition.startListening({ continuous: false, language: 'ja-JP' });
+    stopListening();
   };
+
+  // Update voice input when transcript changes
+  useEffect(() => {
+    if (transcript) {
+      setVoiceInput(transcript);
+    }
+  }, [transcript]);
+
+  // Handle recording state
+  useEffect(() => {
+    if (!listening) {
+      setIsRecording(false);
+    }
+  }, [listening]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -197,10 +225,63 @@ const Jibun: React.FC = () => {
         <button type="submit" className="send-button">
           Send
         </button>
-        <button onClick={startListening} disabled={listening}>
-          🎤 {listening ? '話してください...' : '録音開始'}
+        <button 
+          type="button"
+          onClick={isRecording ? handleVoiceSubmit : startListening} 
+          className={`voice-button ${isRecording ? 'recording' : ''}`}
+          style={{ width: '140px' }}
+        >
+          <span className="button-content">
+            🎤 {isRecording ? (transcript.trim() ? '録音中... 送信' : '録音中...') : '録音開始'}
+          </span>
+          {isRecording && <span className="recording-pulse"></span>}
         </button>
       </form>
+
+      <style>{`
+        .voice-button {
+          position: relative;
+          overflow: hidden;
+          transition: all 0.3s ease;
+        }
+
+        .button-content {
+          position: relative;
+          z-index: 1;
+        }
+
+        .recording-pulse {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(255, 0, 0, 0.3);
+          border-radius: inherit;
+          animation: pulse 1.2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+          0% {
+            transform: scale(1);
+            opacity: 0.7;
+          }
+          50% {
+            transform: scale(1.15);
+            opacity: 0.3;
+          }
+          100% {
+            transform: scale(1);
+            opacity: 0.7;
+          }
+        }
+
+        .voice-button.recording {
+          background-color: #ff3333;
+          color: white;
+          box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+        }
+      `}</style>
     </div>
   );
 };
