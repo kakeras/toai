@@ -1,4 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Main from './components/Main';
 import Jibun from './components/Jibun';
 import Portfolio from './components/Portfolio';
@@ -11,6 +13,7 @@ function App() {
   return (
     <Router>
       <div className="app-container">
+        <ToastContainer />
         <main>
           <Routes>
             <Route path="/" element={<Main />} />

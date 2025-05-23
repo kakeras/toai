@@ -13,6 +13,6 @@ declare module 'html2pdf.js' {
     save: () => Promise<void>;
   }
 
-  const html2pdf: (element: HTMLElement, options?: Html2PdfOptions) => Html2PdfInstance;
+  function html2pdf(): Html2PdfInstance;
   export default html2pdf;
 } 

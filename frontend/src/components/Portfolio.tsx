@@ -57,6 +57,9 @@ const Portfolio: React.FC = () => {
       setMessages(messagesWithQuestion);
       setCurrentQuestionIndex(nextQuestionIndex);
       localStorage.setItem('portfolioChat', JSON.stringify(messagesWithQuestion));
+    } else {
+      // If this was the last question, enable the analysis button
+      setShowAnalysisButton(true);
     }
   };
 
