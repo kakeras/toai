@@ -1,31 +1,31 @@
-import type { ChatCompletionMessage } from 'openai/resources/chat';
+import OpenAI from 'openai';
 
-interface OpenAIResponse {
-  content: string;
-  role: string;
+export interface OpenAIResponse {
+  message: string;
+  error?: string;
 }
 
-export async function callOpenAI(messages: ChatCompletionMessage[], model?: string): Promise<OpenAIResponse> {
+export const callOpenAI = async (messages: OpenAI.Chat.ChatCompletionMessage[]): Promise<OpenAIResponse> => {
   try {
     const response = await fetch('/.netlify/functions/openai', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        messages,
-        model,
-      }),
+      body: JSON.stringify({ messages }),
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to get response from OpenAI');
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    return await response.json();
+    const data = await response.json();
+    return data;
   } catch (error) {
-    console.error('Error calling OpenAI:', error);
-    throw error;
+    console.error('OpenAI API error:', error);
+    return {
+      message: '',
+      error: error instanceof Error ? error.message : 'An error occurred',
+    };
   }
-} 
+}; 

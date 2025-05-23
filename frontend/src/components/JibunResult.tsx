@@ -67,7 +67,7 @@ const JibunResult: React.FC = () => {
       jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
 
-    html2pdf().set(opt).from(element).save();
+    html2pdf().from(element).set(opt).save();
   };
 
   return (
