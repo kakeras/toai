@@ -17,7 +17,6 @@ const Jibun: React.FC = () => {
   const navigate = useNavigate();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isRecording, setIsRecording] = useState(false);
-  const [voiceInput, setVoiceInput] = useState('');
 
   const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
 
@@ -110,7 +109,6 @@ const Jibun: React.FC = () => {
 
   const startListening = async () => {
     setIsRecording(true);
-    setVoiceInput('');
     resetTranscript();
     await SpeechRecognition.startListening({ continuous: true, language: 'ja-JP' });
   };
@@ -124,18 +122,10 @@ const Jibun: React.FC = () => {
     const finalInput = transcript.trim();
     if (finalInput) {
       handleMessageSubmission(finalInput);
-      setVoiceInput('');
       resetTranscript();
     }
     stopListening();
   };
-
-  // Update voice input when transcript changes
-  useEffect(() => {
-    if (transcript) {
-      setVoiceInput(transcript);
-    }
-  }, [transcript]);
 
   // Handle recording state
   useEffect(() => {
