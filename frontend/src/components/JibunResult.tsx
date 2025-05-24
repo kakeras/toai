@@ -31,7 +31,7 @@ const JibunResult: React.FC = () => {
   const handleAnalysis = async () => {
     setIsAnalyzing(true);
     try {
-      const response = await analyzeConversation(messages);
+      const response = await analyzeConversation(messages, 'jibun');
       if (response.message) {
         setAnalysis(response.message);
       }

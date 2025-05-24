@@ -15,20 +15,25 @@ const ANALYSIS_PROMPT_V2 = `上記の会話に基づいて、100文字以内で�
 2. 成長が期待できる分野
 3. 具体的で実行可能なアドバイス
 励ましと建設的な tone を保ってください。`;
+const ANALYSIS_PROMPT_V3 = `上記の会話に基づいて、100文字以内で簡潔な分析とキャリアアドバイスを提供してください。以下の点に焦点を当ててください：
+実現したいこと  
+大切にしていること
+時間をかけて取り組みたいこと
+励ましと建設的な tone を保ってください。`;
 
-export const analyzeConversation = async (messages: Message[] | PortfolioMessage[]) => {
+export const analyzeConversation = async (messages: Message[] | PortfolioMessage[], type: string) => {
   const conversationText = messages
     .map(msg => `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}`)
     .join('\n');
 
   // const promptV1 = `${conversationText}\n\n${ANALYSIS_PROMPT}`;
   const promptV2 = `${conversationText}\n\n${ANALYSIS_PROMPT_V2}`;
-
+  const promptV3 = `${conversationText}\n\n${ANALYSIS_PROMPT_V3}`;
   // const response = await callOpenAI([
   //   { role: 'assistant', content: promptV1 } as OpenAI.Chat.ChatCompletionMessage
   // ]);
   const response = await callOpenAIV2([
-    { role: 'assistant', content: promptV2 } as OpenAI.Chat.ChatCompletionMessage
+    { role: 'assistant', content: type === 'jibun' ? promptV2 : promptV3 } as OpenAI.Chat.ChatCompletionMessage
   ]);
 
   return response;
