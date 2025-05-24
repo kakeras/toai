@@ -8,6 +8,8 @@ import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognitio
 import jibunData from '../scripts/jibun.json';
 import type { Message, JibunData } from '../types/jibun';
 import '../styles/VoiceButton.css';
+import { characterSettings, makePrompt } from '../gptRequest/output';
+import { callOpenAI, openaiHost } from '../hosts/openai';
 
 const Jibun: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -25,8 +27,8 @@ const Jibun: React.FC = () => {
   };
 
   // Helper function to handle message submission
-  const handleMessageSubmission = (content: string) => {
-    if (!content.trim()) return;
+  const handleMessageSubmission = async (content: string) => {
+    console.log(currentQuestionIndex);
 
     // Add user message
     const userMessage: Message = {
@@ -56,6 +58,7 @@ const Jibun: React.FC = () => {
       const messagesWithQuestion = [...updatedMessages, assistantMessage];
       setMessages(messagesWithQuestion);
       setCurrentQuestionIndex(nextQuestionIndex);
+
       localStorage.setItem('jibunChat', JSON.stringify(messagesWithQuestion));
     } else {
       // If this was the last question, enable the analysis button
@@ -74,10 +77,8 @@ const Jibun: React.FC = () => {
     if (savedMessages) {
       const parsedMessages = JSON.parse(savedMessages);
       setMessages(parsedMessages);
-
       // Find the last assistant message to determine current question
       const lastAssistantIndex = [...parsedMessages].reverse().findIndex((msg) => msg.role === 'assistant');
-
       if (lastAssistantIndex !== -1) {
         const lastMessage = parsedMessages[parsedMessages.length - 1 - lastAssistantIndex];
         const questionIndex = (jibunData as JibunData).conversation.findIndex(
@@ -218,9 +219,9 @@ const Jibun: React.FC = () => {
         <button type="submit" className="send-button">
           Send
         </button>
-        <button 
+        <button
           type="button"
-          onClick={isRecording ? handleVoiceSubmit : startListening} 
+          onClick={isRecording ? handleVoiceSubmit : startListening}
           className={`voice-button ${isRecording ? 'recording' : ''}`}
           style={{ width: '140px' }}
         >
