@@ -16,12 +16,12 @@ const Portfolio: React.FC = () => {
   const [showAnalysisButton, setShowAnalysisButton] = useState(false);
   const navigate = useNavigate();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [isRecording, setIsRecording] = useState(false);
+  // const [isRecording, setIsRecording] = useState(false);
 
   const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   // Helper function to handle message submission
@@ -33,9 +33,9 @@ const Portfolio: React.FC = () => {
       role: 'user',
       content,
       timestamp: Date.now(),
-      phase: (portfolioData as PortfolioData).conversation[currentQuestionIndex].phase
+      phase: (portfolioData as PortfolioData).conversation[currentQuestionIndex].phase,
     };
-    
+
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
 
@@ -50,9 +50,9 @@ const Portfolio: React.FC = () => {
         role: 'assistant',
         content: nextQuestion.question,
         timestamp: Date.now(),
-        phase: nextQuestion.phase
+        phase: nextQuestion.phase,
       };
-      
+
       const messagesWithQuestion = [...updatedMessages, assistantMessage];
       setMessages(messagesWithQuestion);
       setCurrentQuestionIndex(nextQuestionIndex);
@@ -75,14 +75,12 @@ const Portfolio: React.FC = () => {
       const parsedMessages = JSON.parse(savedMessages);
       setMessages(parsedMessages);
       // Find the last assistant message to determine current question
-      const lastAssistantIndex = [...parsedMessages]
-        .reverse()
-        .findIndex((msg: Message) => msg.role === 'assistant');
-      
+      const lastAssistantIndex = [...parsedMessages].reverse().findIndex((msg: Message) => msg.role === 'assistant');
+
       if (lastAssistantIndex !== -1) {
         const lastMessage = parsedMessages[parsedMessages.length - 1 - lastAssistantIndex];
         const questionIndex = (portfolioData as PortfolioData).conversation.findIndex(
-          item => item.question === lastMessage.content
+          (item) => item.question === lastMessage.content,
         );
         if (questionIndex !== -1) {
           setCurrentQuestionIndex(questionIndex + 1);
@@ -90,7 +88,8 @@ const Portfolio: React.FC = () => {
           if (questionIndex === (portfolioData as PortfolioData).conversation.length - 1) {
             // Check if there's a user response to the last question
             const hasUserResponse = parsedMessages.some(
-              (msg: Message, idx: number) => idx > parsedMessages.length - 1 - lastAssistantIndex && msg.role === 'user'
+              (msg: Message, idx: number) =>
+                idx > parsedMessages.length - 1 - lastAssistantIndex && msg.role === 'user',
             );
             setShowAnalysisButton(hasUserResponse);
           }
@@ -102,39 +101,59 @@ const Portfolio: React.FC = () => {
         role: 'assistant',
         content: (portfolioData as PortfolioData).conversation[0].question,
         timestamp: Date.now(),
-        phase: (portfolioData as PortfolioData).conversation[0].phase
+        phase: (portfolioData as PortfolioData).conversation[0].phase,
       };
       setMessages([initialMessage]);
       localStorage.setItem('portfolioChat', JSON.stringify([initialMessage]));
     }
   }, []);
 
-  const startListening = () => {
-    setIsRecording(true);
-    resetTranscript();
-    SpeechRecognition.startListening({ continuous: true, language: 'ja-JP' });
+  // const startListening = () => {
+  //   setIsRecording(true);
+  //   resetTranscript();
+  //   SpeechRecognition.startListening({ continuous: true, language: 'ja-JP' });
+  // };
+  const startListening = async () => {
+    await SpeechRecognition.startListening({ continuous: false, language: 'ja-JP' });
   };
 
-  const stopListening = () => {
-    setIsRecording(false);
-    SpeechRecognition.stopListening();
-  };
-
-  const handleVoiceSubmit = () => {
-    const finalInput = transcript.trim();
-    if (finalInput) {
-      handleMessageSubmission(finalInput);
-      resetTranscript();
-    }
-    stopListening();
-  };
-
-  // Handle recording state
+  // const stopListening = () => {
+  //   setIsRecording(false);
+  //   SpeechRecognition.stopListening();
+  // };
   useEffect(() => {
-    if (!listening) {
-      setIsRecording(false);
+    if (!listening && transcript.trim()) {
+      // const userMessage: Message = {
+      //   role: 'user',
+      //   content: transcript,
+      //   timestamp: Date.now(),
+      //   phase: (jibunData as JibunData).conversation[currentQuestionIndex].phase,
+      // };
+      // setMessages((prev) => [...prev, userMessage]);
+      // resetTranscript();
+      const finalInput = transcript.trim();
+      if (finalInput) {
+        handleMessageSubmission(finalInput);
+        resetTranscript();
+      }
     }
   }, [listening]);
+
+  // const handleVoiceSubmit = () => {
+  //   const finalInput = transcript.trim();
+  //   if (finalInput) {
+  //     handleMessageSubmission(finalInput);
+  //     resetTranscript();
+  //   }
+  //   stopListening();
+  // };
+
+  // // Handle recording state
+  // useEffect(() => {
+  //   if (!listening) {
+  //     setIsRecording(false);
+  //   }
+  // }, [listening]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -152,7 +171,7 @@ const Portfolio: React.FC = () => {
       role: 'assistant',
       content: (portfolioData as PortfolioData).conversation[0].question,
       timestamp: Date.now(),
-      phase: (portfolioData as PortfolioData).conversation[0].phase
+      phase: (portfolioData as PortfolioData).conversation[0].phase,
     };
     setMessages([initialMessage]);
     localStorage.setItem('portfolioChat', JSON.stringify([initialMessage]));
@@ -176,8 +195,8 @@ const Portfolio: React.FC = () => {
         </button>
         <h1>マインドポートフォリオをつくる</h1>
         <div className="header-buttons">
-          <button 
-            className={`analysis-button ${!showAnalysisButton ? 'disabled' : ''}`} 
+          <button
+            className={`analysis-button ${!showAnalysisButton ? 'disabled' : ''}`}
             onClick={handleAnalysis}
             disabled={!showAnalysisButton}
           >
@@ -188,27 +207,19 @@ const Portfolio: React.FC = () => {
           </button>
         </div>
       </div>
-      
+
       <div className="chat-messages">
         {messages.map((message, index) => (
-          <div 
-            key={index} 
+          <div
+            key={index}
             className={`message-wrapper ${message.role === 'user' ? 'user-wrapper' : 'assistant-wrapper'}`}
           >
-            {message.role === 'assistant' && (
-              <img src={kamiImage} alt="Kami" className="message-avatar" />
-            )}
-            <div 
-              className={`message ${message.role === 'user' ? 'user-message' : 'assistant-message'}`}
-            >
-              {message.phase && message.role === 'assistant' && (
-                <div className="phase-title">{message.phase}</div>
-              )}
+            {message.role === 'assistant' && <img src={kamiImage} alt="Kami" className="message-avatar" />}
+            <div className={`message ${message.role === 'user' ? 'user-message' : 'assistant-message'}`}>
+              {message.phase && message.role === 'assistant' && <div className="phase-title">{message.phase}</div>}
               {message.content}
             </div>
-            {message.role === 'user' && (
-              <img src={userImage} alt="User" className="message-avatar" />
-            )}
+            {message.role === 'user' && <img src={userImage} alt="User" className="message-avatar" />}
           </div>
         ))}
         <div ref={messagesEndRef} />
@@ -225,7 +236,10 @@ const Portfolio: React.FC = () => {
         <button type="submit" className="send-button">
           Send
         </button>
-        <button 
+        <button onClick={startListening} disabled={listening}>
+          🎤 {listening ? '話してください...' : '録音開始'}
+        </button>
+        {/* <button 
           type="button"
           onClick={isRecording ? handleVoiceSubmit : startListening} 
           className={`voice-button ${isRecording ? 'recording' : ''}`}
@@ -235,7 +249,7 @@ const Portfolio: React.FC = () => {
             🎤 {isRecording ? (transcript.trim() ? '録音中... 送信' : '録音中...') : '録音開始'}
           </span>
           {isRecording && <span className="recording-pulse"></span>}
-        </button>
+        </button> */}
       </form>
 
       <style>{`
@@ -286,4 +300,4 @@ const Portfolio: React.FC = () => {
   );
 };
 
-export default Portfolio; 
+export default Portfolio;

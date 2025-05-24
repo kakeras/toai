@@ -16,7 +16,7 @@ const Jibun: React.FC = () => {
   const [showAnalysisButton, setShowAnalysisButton] = useState(false);
   const navigate = useNavigate();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [isRecording, setIsRecording] = useState(false);
+  // const [isRecording, setIsRecording] = useState(false);
 
   const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
 
@@ -110,32 +110,53 @@ const Jibun: React.FC = () => {
     }
   }, []);
 
-  const startListening = async () => {
-    setIsRecording(true);
-    resetTranscript();
-    await SpeechRecognition.startListening({ continuous: true, language: 'ja-JP' });
-  };
+  // const startListening = async () => {
+  //   setIsRecording(true);
+  //   resetTranscript();
+  //   await SpeechRecognition.startListening({ continuous: true, language: 'ja-JP' });
+  // };
 
-  const stopListening = () => {
-    setIsRecording(false);
-    SpeechRecognition.stopListening();
-  };
+  // const stopListening = async () => {
+  //   setIsRecording(false);
+  //   await SpeechRecognition.stopListening();
+  // };
 
-  const handleVoiceSubmit = () => {
-    const finalInput = transcript.trim();
-    if (finalInput) {
-      handleMessageSubmission(finalInput);
-      resetTranscript();
-    }
-    stopListening();
-  };
+  // const handleVoiceSubmit = () => {
+  //   const finalInput = transcript.trim();
+  //   if (finalInput) {
+  //     handleMessageSubmission(finalInput);
+  //     resetTranscript();
+  //   }
+  //   stopListening();
+  // };
 
   // Handle recording state
+  // useEffect(() => {
+  //   if (!listening) {
+  //     setIsRecording(false);
+  //   }
+  // }, [listening]);
   useEffect(() => {
-    if (!listening) {
-      setIsRecording(false);
+    if (!listening && transcript.trim()) {
+      // const userMessage: Message = {
+      //   role: 'user',
+      //   content: transcript,
+      //   timestamp: Date.now(),
+      //   phase: (jibunData as JibunData).conversation[currentQuestionIndex].phase,
+      // };
+      // setMessages((prev) => [...prev, userMessage]);
+      // resetTranscript();
+      const finalInput = transcript.trim();
+      if (finalInput) {
+        handleMessageSubmission(finalInput);
+        resetTranscript();
+      }
     }
   }, [listening]);
+
+  const startListening = async () => {
+    await SpeechRecognition.startListening({ continuous: false, language: 'ja-JP' });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -218,9 +239,12 @@ const Jibun: React.FC = () => {
         <button type="submit" className="send-button">
           Send
         </button>
-        <button 
+        <button onClick={startListening} disabled={listening}>
+          🎤 {listening ? '話してください...' : '録音開始'}
+        </button>
+        {/* <button
           type="button"
-          onClick={isRecording ? handleVoiceSubmit : startListening} 
+          onClick={isRecording ? handleVoiceSubmit : startListening}
           className={`voice-button ${isRecording ? 'recording' : ''}`}
           style={{ width: '140px' }}
         >
@@ -228,7 +252,7 @@ const Jibun: React.FC = () => {
             🎤 {isRecording ? (transcript.trim() ? '録音中... 送信' : '録音中...') : '録音開始'}
           </span>
           {isRecording && <span className="recording-pulse"></span>}
-        </button>
+        </button> */}
       </form>
 
       <style>{`
